@@ -4,15 +4,15 @@ Arduino + hardware + Processing = graphisme généré (à la ikeda)
 4 potards + 2 intés soudés sur arduino Leonardo headerless
 
 ```
-arduino | --- | capteur
---------------------------
+arduino | --- | capteur.       | arduino
+------------------------------------
      A0 | --- | potard 1
      A1 | --- | potard 2
      A2 | --- | potard 3
      A3 | --- | potard 4
      …
-     10 | --- | interrupteur 1
-     11 | --- | interrupteur 2
+     10 | --- | interrupteur 1 | GND
+     11 | --- | interrupteur 2 | GND
      …
      13 | --- | led
 ```
