@@ -1,24 +1,24 @@
 /*
 mrbbp
-4 potards connectés à un mc pour envoie des valeur à Processing
+4 potards connectés à un mc pour envoie des valeurs à Processing
 
 v03:  changement de mc (exen mini M0 -> arduino leonardo)
 v04:  envoie d'une premikere lecture des potard (init)
 v05: inverse les valeurs des potards (0-> 1024 et 1024 -> 0);
+v06: ajoute deux inté en D10 et D11
 */
 
-const int pot1 = A0;           // analog sensor
-const int pot2 = A1;           // analog sensor 
+const int pot1 = A0;
+const int pot2 = A1;       
 const int pot3 = A2;
 const int pot4 = A3;
-const int int1 = A10;
-const int int1 = A11;
+const int pInt1 = 10;
+const int pInt2 = 11;
 
-int responseDelay = 2;          // response delay of the mouse, in ms
-int seuil = 2;                  // seuil de mouvement
-int table[] = {pot1, pot2, pot3, pot4};    // pin numbers for {x, y}
-int mouseReading[2];            // final mouse readings for {x, y}
-int old1, old2, old3, old4;
+int responseDelay = 2;
+int seuil = 2;// seuil de mouvement
+int table[] = {pot1, pot2, pot3, pot4};    
+int old1, old2, old3, old4, oldInt1, oldInt2, int1, int2;
 bool first = true;
 
 void setup() {
@@ -29,8 +29,9 @@ void setup() {
   delay(100);
   Serial.println("début init programme");
   pinMode(13, OUTPUT); // la led
-  // si on veut simuler une souris (utile pour les events MousePress et MouseRelease, interceptés dans Processing)
-  //Mouse.begin();
+  pinMode(pInt1, INPUT_PULLUP);
+  pinMode(pInt2, INPUT_PULLUP);
+  // clignote 4 fois
   for (int i=0; i<4;i++) {
     digitalWrite(13, HIGH);
     delay(50);
@@ -51,17 +52,23 @@ void loop() {
   if (Serial.available() > 0) {
     // get incoming byte:
     int inByte = Serial.read();
-    //Serial.println(inByte);
     if (inByte == 10) {
       // si "\n", renvoie les valeurs (lancement du prog processing)
-      Serial.print("a:");
+      // envoie les valeurs initiales
+      Serial.print("p1:");
       Serial.println(Reading1);
-      Serial.print("b:");
+      Serial.print("p2:");
       Serial.println(Reading2);
-      Serial.print("c:");
+      Serial.print("p3:");
       Serial.println(Reading3);
-      Serial.print("d:");
+      Serial.print("p4:");
       Serial.println(Reading4);
+      Serial.print("int1:");
+      Serial.println(digitalRead(pInt1));
+      oldInt1 = digitalRead(pInt1);
+      Serial.print("int2:");
+      Serial.println(digitalRead(pInt2));
+      oldInt2 = digitalRead(pInt2);
     }
   } else {
     /* si la valeur est proche de l'ancienne (seuil), il n'envoie rien
@@ -70,70 +77,60 @@ void loop() {
     */
     if (Reading1 < old1 - seuil || Reading1 > old1 + seuil) {
       // format "x:(valeur:0-1024)" p.ex: "x:1022"
-      Serial.print("a:");
+      Serial.print("p1:");
       Serial.println(Reading1);
       // met à jour la valeur mémorisée
       old1 = Reading1;
-      digitalWrite(13, HIGH);
-      delay(50);
-      digitalWrite(13, LOW);
-      delay(50);
+      blink();
     }
     if (Reading2 < old2 - seuil || Reading2 > old2 + seuil) {
-      Serial.print("b:");
+      Serial.print("p2:");
       Serial.println(Reading2);
       // met à jour la valeur mémorisée
       old2 = Reading2;
-      digitalWrite(13, HIGH);
-      delay(50);
-      digitalWrite(13, LOW);
-      delay(50);
+      blink();;
     }
     if (Reading3 < old3 - seuil || Reading3 > old3 + seuil) {
-      Serial.print("c:");
+      Serial.print("p3:");
       Serial.println(Reading3);
       // met à jour la valeur mémorisée
       old3 = Reading3;
-      digitalWrite(13, HIGH);
-      delay(50);
-      digitalWrite(13, LOW);
-      delay(50);
+      blink();
     }
     if (Reading4 < (old4 - seuil) || Reading4 > (old4 + seuil)) {
-      Serial.print("d:");
+      Serial.print("p4:");
       Serial.println(Reading4);
       // met à jour la valeur mémorisée
       old4 = Reading4;
-      digitalWrite(13, HIGH);
-      delay(50);
-      digitalWrite(13, LOW);
-      delay(50);
+      blink();
+    }
+    if(digitalRead(pInt1) != oldInt1){
+      int1 = digitalRead(pInt1);
+      Serial.print("int1:");
+      Serial.println(int1);
+      oldInt1 = int1;
+      blink();
+    }
+    if(digitalRead(pInt2) != oldInt2){
+      int2 = digitalRead(pInt2);
+      Serial.print("int2:");
+      Serial.println(int2);
+      oldInt2 = int2;
+      blink();
     }
     delay(responseDelay);
-  }
-
-  /*// read button and click mouse:
-    //if the switch attached to pin d0 is pressed
-    if(digitalRead(0) == HIGH && oldB != HIGH){
-    //press and hold the right mouse button
-    Serial.println("P");
-    //Mouse.press();
-    }
-    //if the switch attached to pin d0 is not pressed
-    if(digitalRead(0) == LOW && oldB != LOW){
-    //release the right mouse button
-    Serial.println("R");
-    //Mouse.release();
-    }
-    // met à jour les valeurs mémorisées
-    oldB = digitalRead(0);
-  */
-  //Serial.println("loop");
+  } 
+}
+// clignotement 1 fois durée total = 100ms
+void blink() {
+  digitalWrite(13, HIGH);
+  delay(50);
+  digitalWrite(13, LOW);
+  delay(50);
 }
 
-
 int readPot(int index) {
-  // read the analog input:
+  // lecture des valeurs analogiques:
   int reading = analogRead(table[index]);
   int retour = 1024 - reading;
   return retour;
