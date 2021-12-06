@@ -17,11 +17,15 @@ arduino | --- | capteur.       | arduino
      13 | --- | led
 ```
 
-Lorsque l'arduino est initilaisée, elle attend que le programme lui envoie un retour chariot pour commencer à envoyer les valeurs d'init.
+Lorsque l'arduino est initialisée, elle attend que le programme lui envoie un retour chariot pour commencer à envoyer les valeurs d'init.
 Lorsqu'on manipule les inté ou potards, les valeurs brutes sont envoyées sur le port série au programme Processing.
 
 
-MàJ 211205 - use midiUSB Library on Arduino + midiBus on Processing
-Modifying just button pin for matchnig with my soldering choice, the `midictrl.ino` sketch.
-Work fine on Processing 3.5.3.
-Have some Processing Library error.
+**MàJ 211205** - 
+J'utilise maintenant la lib **midiUSB** sur l'Arduino (avec le sketch **midictrl.ino** et une modif sur les IO pour correpondre à mes soudures).  
+Sur Processing (3.5.3 et 4b2), j'utilise la lib **midiBus**.  
+MidiBus est compatible avec Processing 4b2 depuis la version 9.
+
+I use now **midiUSB** Library on Arduino + **midiBus** on Processing
+Modifying just button pin for matchnig with my soldering choice, the `midictrl.ino` sketch.  
+Work fine on Processing 3.5.3 and 4b2 (since midiBus update to version 9).    
